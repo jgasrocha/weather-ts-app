@@ -57,7 +57,7 @@ export function WeatherChart({ daily }: WeatherChartProps) {
             
             <Tooltip 
               contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-              formatter={(value: number) => [`${value}°C`]}
+              formatter={(value) => [`${value ?? 0}°C`]}
             />
             
             <Legend verticalAlign="top" height={36} iconType="circle" />
