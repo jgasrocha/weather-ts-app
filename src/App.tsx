@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { SearchForm } from './components/SearchForm';
 import { CityCard } from './components/CityCard';
 import { WeatherCard } from './components/WeatherCard';
+import { WeatherChart } from './components/WeatherChart';
 import { searchCity, getWeather } from './services/weather';
 import type { GeocodingResult, WeatherResponse } from './types/weather';
 
@@ -78,7 +79,10 @@ function App() {
         )}
 
         {weather && selectedCity && (
-          <WeatherCard data={weather} cityName={selectedCity.name} />
+          <>
+            <WeatherCard data={weather} cityName={selectedCity.name} />
+            <WeatherChart daily={weather.daily} />
+          </>
         )}
       </div>
     </div>
