@@ -4,6 +4,7 @@ import { CityCard } from './components/CityCard';
 import { WeatherCard } from './components/WeatherCard';
 import { WeatherChart } from './components/WeatherChart';
 import { searchCity, getWeather } from './services/weather';
+import { Logo } from './components/Logo';
 import type { GeocodingResult, WeatherResponse } from './types/weather';
 
 function App() {
@@ -36,7 +37,7 @@ function App() {
 
   async function handleSelectCity(city: GeocodingResult) {
     setSelectedCity(city);
-    setCities([]); // Esconde a lista
+    setCities([]);
     setLoading(true);
     setError(null);
 
@@ -53,12 +54,19 @@ function App() {
   return (
     <div className="min-h-dvh bg-gradient-to-br from-blue-50 to-indigo-100 p-4 sm:p-8">
       <div className="mx-auto max-w-lg sm:max-w-2xl">
-        
-        <header className="mb-8 text-center sm:text-left">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
-            Previsão do Tempo
-          </h1>
-          <p className="text-gray-600 mt-1">Busque qualquer cidade do mundo</p>
+
+        <header className="mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Logo className="w-10 h-10 sm:w-12 sm:h-12" />
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 tracking-tight">
+                AeroCast
+              </h1>
+              <p className="text-gray-600 mt-1 text-sm sm:text-base">
+                Previsão do tempo precisa e sem complicação
+              </p>
+            </div>
+          </div>
         </header>
 
         <SearchForm onSearch={handleSearch} isLoading={loading} />

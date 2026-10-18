@@ -8,7 +8,6 @@ interface WeatherCardProps {
 export function WeatherCard({ data, cityName }: WeatherCardProps) {
   const currentTemp = Math.round(data.current.temperature_2m);
   
-  // Mapeia o código do clima para um emoji (simplificado)
   const getWeatherEmoji = (code: number) => {
     if (code === 0) return '☀️';
     if (code <= 3) return '⛅';

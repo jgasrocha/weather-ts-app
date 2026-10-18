@@ -52,7 +52,7 @@ export function WeatherChart({ daily }: WeatherChartProps) {
               axisLine={false} 
               tickLine={false} 
               tick={{ fill: '#6b7280', fontSize: 12 }} 
-              domain={['dataMin - 2', 'dataMax + 2']} // Dá uma margem para o gráfico não colar nas bordas
+              domain={['dataMin - 2', 'dataMax + 2']}
             />
             
             <Tooltip 
@@ -62,7 +62,6 @@ export function WeatherChart({ daily }: WeatherChartProps) {
             
             <Legend verticalAlign="top" height={36} iconType="circle" />
             
-            {/* Linha da Máxima (Vermelho) */}
             <Line 
               type="monotone" 
               dataKey="max" 
@@ -73,7 +72,6 @@ export function WeatherChart({ daily }: WeatherChartProps) {
               activeDot={{ r: 6 }} 
             />
             
-            {/* Linha da Mínima (Azul) */}
             <Line 
               type="monotone" 
               dataKey="min" 
