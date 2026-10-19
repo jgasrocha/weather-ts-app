@@ -15,16 +15,15 @@ interface WeatherChartProps {
 }
 
 export function WeatherChart({ daily }: WeatherChartProps) {
-  // 1. Transformando os dados da API para o formato que o Recharts entende
   const chartData = daily.time.map((time, index) => {
-    // Converte "2026-10-17" em "sáb"
     const date = new Date(time);
     const dayName = date.toLocaleDateString('pt-BR', { weekday: 'short' });
 
     return {
-      name: dayName.charAt(0).toUpperCase() + dayName.slice(1).replace('.', ''), // Ex: "Sáb"
+      name: dayName.charAt(0).toUpperCase() + dayName.slice(1).replace('.', ''),
       max: Math.round(daily.temperature_2m_max[index]),
       min: Math.round(daily.temperature_2m_min[index]),
+      rain: daily.precipitation_probability_max?.[index] ?? 0, // ← novo dado
     };
   });
 
@@ -34,7 +33,6 @@ export function WeatherChart({ daily }: WeatherChartProps) {
         Previsão para os próximos dias
       </h3>
       
-      {/* O ResponsiveContainer garante que o gráfico se ajuste ao tamanho da tela */}
       <div className="h-64 sm:h-80 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
@@ -48,11 +46,24 @@ export function WeatherChart({ daily }: WeatherChartProps) {
               dy={10}
             />
             
+            {/* Eixo esquerdo: Temperatura (°C) */}
             <YAxis 
+              yAxisId="left"
               axisLine={false} 
               tickLine={false} 
               tick={{ fill: '#6b7280', fontSize: 12 }} 
               domain={['dataMin - 2', 'dataMax + 2']}
+            />
+            
+            {/* Eixo direito: Chuva (%) */}
+            <YAxis 
+              yAxisId="right"
+              orientation="right"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#6b7280', fontSize: 12 }}
+              domain={[0, 100]}
+              tickFormatter={(value) => `${value}%`}
             />
             
             <Tooltip 
@@ -62,7 +73,9 @@ export function WeatherChart({ daily }: WeatherChartProps) {
             
             <Legend verticalAlign="top" height={36} iconType="circle" />
             
+            {/* Linhas de temperatura (eixo esquerdo) */}
             <Line 
+              yAxisId="left"
               type="monotone" 
               dataKey="max" 
               name="Máxima" 
@@ -71,8 +84,8 @@ export function WeatherChart({ daily }: WeatherChartProps) {
               dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} 
               activeDot={{ r: 6 }} 
             />
-            
             <Line 
+              yAxisId="left"
               type="monotone" 
               dataKey="min" 
               name="Mínima" 
@@ -80,6 +93,19 @@ export function WeatherChart({ daily }: WeatherChartProps) {
               strokeWidth={3} 
               dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} 
               activeDot={{ r: 6 }} 
+            />
+            
+            {/* Linha de chuva (eixo direito) */}
+            <Line 
+              yAxisId="right"
+              type="monotone" 
+              dataKey="rain" 
+              name="Chuva" 
+              stroke="#8b5cf6" 
+              strokeWidth={2} 
+              strokeDasharray="5 5"
+              dot={{ r: 3, strokeWidth: 2, fill: '#fff' }} 
+              activeDot={{ r: 5 }} 
             />
           </LineChart>
         </ResponsiveContainer>

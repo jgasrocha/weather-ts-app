@@ -20,7 +20,7 @@ export async function getWeather(lat: number, lon: number): Promise<WeatherRespo
     latitude: lat.toString(),
     longitude: lon.toString(),
     current: 'temperature_2m,weather_code',
-    daily: 'temperature_2m_max,temperature_2m_min',
+    daily: 'temperature_2m_max,temperature_2m_min,precipitation_probability_max',
     timezone: 'auto',
   });
 
