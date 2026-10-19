@@ -14,7 +14,7 @@ export async function getWeather(lat: number, lon: number): Promise<WeatherRespo
   const params = new URLSearchParams({
     latitude: lat.toString(),
     longitude: lon.toString(),
-    current: 'temperature_2m,weather_code',
+    current: 'temperature_2m,weather_code,is_day',
     daily: 'temperature_2m_max,temperature_2m_min,precipitation_probability_max',
     hourly: 'precipitation_probability', // Garante que o dado venha
     timezone: 'auto',
