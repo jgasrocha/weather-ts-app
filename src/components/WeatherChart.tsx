@@ -35,12 +35,12 @@ export function WeatherChart({ daily, hourly}: WeatherChartProps) {
   });
 
   // Função chamada quando o usuário clica no gráfico
-  const handleChartClick = (state: { activeTooltipIndex?: number | null }) => {
+  const handleChartClick = (state: any) => {
     if (state && typeof state.activeTooltipIndex === 'number') {
       setSelectedDayIndex(state.activeTooltipIndex);
     }
   };
-  
+
   return (
     <div className="mt-8 bg-white rounded-2xl shadow-lg p-4 sm:p-6">
       <h3 className="text-lg font-bold text-gray-700 mb-6 text-center sm:text-left">
