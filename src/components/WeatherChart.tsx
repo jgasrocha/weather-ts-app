@@ -32,14 +32,18 @@ export function WeatherChart({ daily, hourly }: WeatherChartProps) {
       originalIndex: index,
     };
   });
-
+  // Função para lidar com o clique nos pontos
   const handlePointClick = (data: any) => {
-    const index = data?.originalIndex ?? data?.payload?.originalIndex;
-
-    if (typeof index === 'number') {
-      setSelectedDayIndex(index);
+    // O Recharts envia o nome do dia (ex: "Seg", "Ter") no activeLabel
+    if (data && data.activeLabel) {
+      // Encontramos o index do dia no nosso array original
+      const index = chartData.findIndex((item) => item.name === data.activeLabel);
+      if (index !== -1) {
+        setSelectedDayIndex(index);
+      }
     }
   };
+
   return (
     <div className="mt-8 bg-white rounded-2xl shadow-lg p-4 sm:p-6">
       <h3 className="text-lg font-bold text-gray-700 mb-6 text-center sm:text-left">
@@ -56,6 +60,7 @@ export function WeatherChart({ daily, hourly }: WeatherChartProps) {
             data={chartData}
             margin={{ top: 5, right: 10, left: -20, bottom: 5 }}
             style={{ cursor: 'pointer' }}
+            onClick={handlePointClick} 
           >
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
 
@@ -104,7 +109,6 @@ export function WeatherChart({ daily, hourly }: WeatherChartProps) {
               strokeWidth={3}
               dot={{ r: 4, strokeWidth: 2, fill: '#fff' }}
               activeDot={{ r: 6 }}
-              onClick={handlePointClick}
             />
             <Line
               yAxisId="left"
@@ -115,7 +119,6 @@ export function WeatherChart({ daily, hourly }: WeatherChartProps) {
               strokeWidth={3}
               dot={{ r: 4, strokeWidth: 2, fill: '#fff' }}
               activeDot={{ r: 6 }}
-              onClick={handlePointClick}
             />
             <Line
               yAxisId="right"
@@ -127,7 +130,6 @@ export function WeatherChart({ daily, hourly }: WeatherChartProps) {
               strokeDasharray="5 5"
               dot={{ r: 3, strokeWidth: 2, fill: '#fff' }}
               activeDot={{ r: 5 }}
-              onClick={handlePointClick}
             />
           </LineChart>
         </ResponsiveContainer>
