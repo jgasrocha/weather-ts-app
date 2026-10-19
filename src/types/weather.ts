@@ -27,6 +27,7 @@ export interface DailyForecast {
 export interface WeatherResponse {
   current: CurrentWeather;
   daily: DailyForecast;
+  hourly: HourlyForecast; 
   timezone: string;
 }
 
