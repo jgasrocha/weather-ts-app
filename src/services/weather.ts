@@ -22,7 +22,7 @@ export async function getWeather(lat: number, lon: number): Promise<WeatherRespo
 
   const response = await fetch(`${WEATHER_URL}?${params}`);
   if (!response.ok) throw new Error('Falha ao buscar previsão do tempo');
-  
+
   return response.json() as Promise<WeatherResponse>;
 }
 
@@ -31,4 +31,19 @@ export async function reverseGeocode(lat: number, lon: number): Promise<Geocodin
   const response = await fetch(url);
   if (!response.ok) throw new Error('Falha ao buscar nome da cidade');
   return response.json() as Promise<GeocodingResponse>;
+}
+
+export async function getCityNameFromCoords(lat: number, lon: number): Promise<string | null> {
+  const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1`;
+
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': 'AeroCast/1.0 (https://github.com/jgasrocha/weather-ts-app)'
+    }
+  });
+
+  if (!response.ok) return null;
+
+  const data = await response.json();
+  return data.address?.city || data.address?.town || data.address?.village || data.address?.municipality || null;
 }

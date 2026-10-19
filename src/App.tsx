@@ -3,7 +3,7 @@ import { SearchForm } from './components/SearchForm';
 import { CityCard } from './components/CityCard';
 import { WeatherCard } from './components/WeatherCard';
 import { WeatherChart } from './components/WeatherChart';
-import { searchCity, getWeather, reverseGeocode } from './services/weather';
+import { searchCity, getWeather, getCityNameFromCoords } from './services/weather';
 import { Logo } from './components/Logo';
 import { WeatherCardSkeleton } from './components/Skeleton';
 import type { GeocodingResult, WeatherResponse } from './types/weather';
@@ -14,6 +14,8 @@ function App() {
   const [weather, setWeather] = useState<WeatherResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  const [isLocating, setIsLocating] = useState(false);
 
   async function loadWeatherForCity(city: GeocodingResult) {
     setSelectedCity(city);
@@ -21,6 +23,7 @@ function App() {
     setLoading(true);
     setError(null);
     setWeather(null);
+    setIsLocating(false); 
 
     try {
       const data = await getWeather(city.latitude, city.longitude);
@@ -35,24 +38,36 @@ function App() {
   useEffect(() => {
     if (!navigator.geolocation) return;
 
+    setIsLocating(true); 
     setLoading(true);
+
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
           const { latitude, longitude } = position.coords;
-          const geoData = await reverseGeocode(latitude, longitude);
+          const cityName = await getCityNameFromCoords(latitude, longitude);
           
-          if (geoData.results && geoData.results.length > 0) {
-            await loadWeatherForCity(geoData.results[0]);
+          if (cityName) {
+            const geoData = await searchCity(cityName);
+            
+            if (geoData.results && geoData.results.length > 0) {
+              await loadWeatherForCity(geoData.results[0]);
+            } else {
+              setLoading(false);
+              setIsLocating(false);
+            }
           } else {
             setLoading(false);
+            setIsLocating(false);
           }
         } catch {
           setLoading(false);
+          setIsLocating(false);
         }
       },
       () => {
         setLoading(false);
+        setIsLocating(false); 
       },
       { timeout: 10000 }
     );
@@ -64,6 +79,7 @@ function App() {
     setCities([]);
     setWeather(null);
     setSelectedCity(null);
+    setIsLocating(false); 
 
     try {
       const data = await searchCity(cityName);
@@ -101,7 +117,7 @@ function App() {
           </div>
         </header>
 
-        <SearchForm onSearch={handleSearch} isLoading={loading} />
+        <SearchForm onSearch={handleSearch} isLoading={loading && !isLocating} />
 
         {error && (
           <div className="mt-6 rounded-lg bg-red-100 p-4 text-red-700 text-center">
@@ -118,7 +134,19 @@ function App() {
           </div>
         )}
 
-        {loading && !weather && <WeatherCardSkeleton />}
+        {isLocating && (
+          <div className="mt-8 flex flex-col items-center justify-center p-8 bg-white rounded-2xl shadow-lg border border-blue-100 animate-pulse">
+            <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+            <p className="text-gray-700 font-medium text-center">
+              Reconhecendo sua localização atual...
+            </p>
+            <p className="text-gray-500 text-sm text-center mt-1">
+              Isso ajuda a trazer a previsão exata para você.
+            </p>
+          </div>
+        )}
+
+        {loading && !weather && !isLocating && <WeatherCardSkeleton />}
 
         {weather && selectedCity && !loading && (
           <>
