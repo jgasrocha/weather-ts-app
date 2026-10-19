@@ -34,12 +34,12 @@ export function WeatherChart({ daily, hourly }: WeatherChartProps) {
   });
 
   const handlePointClick = (data: any) => {
-    
-    if (data && data.payload && typeof data.payload.originalIndex === 'number') {
-      setSelectedDayIndex(data.payload.originalIndex);
+    const index = data?.originalIndex ?? data?.payload?.originalIndex;
+
+    if (typeof index === 'number') {
+      setSelectedDayIndex(index);
     }
   };
-
   return (
     <div className="mt-8 bg-white rounded-2xl shadow-lg p-4 sm:p-6">
       <h3 className="text-lg font-bold text-gray-700 mb-6 text-center sm:text-left">
