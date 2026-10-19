@@ -89,7 +89,7 @@ function App() {
         {weather && selectedCity && (
           <>
             <WeatherCard data={weather} cityName={selectedCity.name} />
-            <WeatherChart daily={weather.daily} />
+            <WeatherChart daily={weather.daily} hourly={weather.hourly}/>
           </>
         )}
       </div>

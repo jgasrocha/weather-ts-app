@@ -29,3 +29,8 @@ export interface WeatherResponse {
   daily: DailyForecast;
   timezone: string;
 }
+
+export interface HourlyForecast {
+  time: string[];
+  precipitation_probability: number[];
+}

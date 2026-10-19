@@ -1,4 +1,4 @@
-import type { GeocodingResponse, WeatherResponse } from '../types/weather';
+import type { GeocodingResponse, WeatherResponse, HourlyForecast } from '../types/weather';
 
 const GEO_URL = 'https://geocoding-api.open-meteo.com/v1/search';
 const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
@@ -21,6 +21,7 @@ export async function getWeather(lat: number, lon: number): Promise<WeatherRespo
     longitude: lon.toString(),
     current: 'temperature_2m,weather_code',
     daily: 'temperature_2m_max,temperature_2m_min,precipitation_probability_max',
+    hourly: 'precipitation_probability',
     timezone: 'auto',
   });
 
