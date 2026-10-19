@@ -17,8 +17,7 @@ interface WeatherChartProps {
   hourly: HourlyForecast;
 }
 
-export function WeatherChart({ daily, hourly}: WeatherChartProps) {
-  // Guarda o index do dia que foi clicado (null = nenhum)
+export function WeatherChart({ daily, hourly }: WeatherChartProps) {
   const [selectedDayIndex, setSelectedDayIndex] = useState<number | null>(null);
 
   const chartData = daily.time.map((time, index) => {
@@ -30,14 +29,14 @@ export function WeatherChart({ daily, hourly}: WeatherChartProps) {
       max: Math.round(daily.temperature_2m_max[index]),
       min: Math.round(daily.temperature_2m_min[index]),
       rain: daily.precipitation_probability_max?.[index] ?? 0,
-      originalIndex: index, // Salva o index original para referência
+      originalIndex: index,
     };
   });
 
-  // Função chamada quando o usuário clica no gráfico
-  const handleChartClick = (state: any) => {
-    if (state && typeof state.activeTooltipIndex === 'number') {
-      setSelectedDayIndex(state.activeTooltipIndex);
+  const handlePointClick = (data: any) => {
+    
+    if (data && data.payload && typeof data.payload.originalIndex === 'number') {
+      setSelectedDayIndex(data.payload.originalIndex);
     }
   };
 
@@ -53,11 +52,9 @@ export function WeatherChart({ daily, hourly}: WeatherChartProps) {
 
       <div className="h-64 sm:h-80 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          {/* Adicionamos o onClick aqui */}
           <LineChart
             data={chartData}
             margin={{ top: 5, right: 10, left: -20, bottom: 5 }}
-            onClick={handleChartClick}
             style={{ cursor: 'pointer' }}
           >
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
@@ -107,6 +104,7 @@ export function WeatherChart({ daily, hourly}: WeatherChartProps) {
               strokeWidth={3}
               dot={{ r: 4, strokeWidth: 2, fill: '#fff' }}
               activeDot={{ r: 6 }}
+              onClick={handlePointClick}
             />
             <Line
               yAxisId="left"
@@ -117,6 +115,7 @@ export function WeatherChart({ daily, hourly}: WeatherChartProps) {
               strokeWidth={3}
               dot={{ r: 4, strokeWidth: 2, fill: '#fff' }}
               activeDot={{ r: 6 }}
+              onClick={handlePointClick}
             />
             <Line
               yAxisId="right"
@@ -128,12 +127,12 @@ export function WeatherChart({ daily, hourly}: WeatherChartProps) {
               strokeDasharray="5 5"
               dot={{ r: 3, strokeWidth: 2, fill: '#fff' }}
               activeDot={{ r: 5 }}
+              onClick={handlePointClick}
             />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Card que aparece quando um dia é clicado */}
       {selectedDayIndex !== null && hourly && (
         <HourlyChart
           dateString={daily.time[selectedDayIndex]}
