@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SearchForm } from './components/SearchForm';
 import { CityCard } from './components/CityCard';
 import { WeatherCard } from './components/WeatherCard';
 import { WeatherChart } from './components/WeatherChart';
-import { searchCity, getWeather } from './services/weather';
+import { searchCity, getWeather, reverseGeocode } from './services/weather';
 import { Logo } from './components/Logo';
+import { WeatherCardSkeleton } from './components/Skeleton';
 import type { GeocodingResult, WeatherResponse } from './types/weather';
 
 function App() {
@@ -13,6 +14,49 @@ function App() {
   const [weather, setWeather] = useState<WeatherResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  async function loadWeatherForCity(city: GeocodingResult) {
+    setSelectedCity(city);
+    setCities([]);
+    setLoading(true);
+    setError(null);
+    setWeather(null);
+
+    try {
+      const data = await getWeather(city.latitude, city.longitude);
+      setWeather(data);
+    } catch {
+      setError('Erro ao carregar previsão.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+
+    setLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const geoData = await reverseGeocode(latitude, longitude);
+          
+          if (geoData.results && geoData.results.length > 0) {
+            await loadWeatherForCity(geoData.results[0]);
+          } else {
+            setLoading(false);
+          }
+        } catch {
+          setLoading(false);
+        }
+      },
+      () => {
+        setLoading(false);
+      },
+      { timeout: 10000 }
+    );
+  }, []);
 
   async function handleSearch(cityName: string) {
     setLoading(true);
@@ -36,19 +80,7 @@ function App() {
   }
 
   async function handleSelectCity(city: GeocodingResult) {
-    setSelectedCity(city);
-    setCities([]);
-    setLoading(true);
-    setError(null);
-
-    try {
-      const data = await getWeather(city.latitude, city.longitude);
-      setWeather(data);
-    } catch {
-      setError('Erro ao carregar previsão.');
-    } finally {
-      setLoading(false);
-    }
+    await loadWeatherForCity(city);
   }
 
   return (
@@ -86,10 +118,12 @@ function App() {
           </div>
         )}
 
-        {weather && selectedCity && (
+        {loading && !weather && <WeatherCardSkeleton />}
+
+        {weather && selectedCity && !loading && (
           <>
             <WeatherCard data={weather} cityName={selectedCity.name} />
-            <WeatherChart daily={weather.daily} hourly={weather.hourly}/>
+            <WeatherChart daily={weather.daily} hourly={weather.hourly} />
           </>
         )}
       </div>

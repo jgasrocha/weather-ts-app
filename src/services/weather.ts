@@ -25,3 +25,10 @@ export async function getWeather(lat: number, lon: number): Promise<WeatherRespo
   
   return response.json() as Promise<WeatherResponse>;
 }
+
+export async function reverseGeocode(lat: number, lon: number): Promise<GeocodingResponse> {
+  const url = `${GEO_URL}?latitude=${lat}&longitude=${lon}&count=1&language=pt&format=json`;
+  const response = await fetch(url);
+  if (!response.ok) throw new Error('Falha ao buscar nome da cidade');
+  return response.json() as Promise<GeocodingResponse>;
+}
